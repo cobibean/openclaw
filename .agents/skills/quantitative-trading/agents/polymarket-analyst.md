@@ -55,40 +55,56 @@ A strategy with 55% hit rate has ~4.2% realized edge. A strategy with 51% hit ra
 
 ## Strategy Roster
 
-18 strategies tested on the full dataset. Results from the Phase 0 sprint (2026-02-08/09):
+**The authoritative live roster is `pipeline/warchest.md`.** Always read that file for the current list of deployed strategies. What follows is a summary.
 
-### War Chest (8 strategies to keep and experiment with)
+### Warchest — Live (13 strategies across 2 traders)
 
-| Rank | Strategy                       | OOS Edge | OOS Bets | IS Edge | Category       |
-| ---- | ------------------------------ | -------- | -------- | ------- | -------------- |
-| 1    | zscore_reversion               | +5.79%   | 732      | +1.72%  | Mean Reversion |
-| 2    | bollinger_band_reversion       | +4.67%   | 1,030    | +0.99%  | Mean Reversion |
-| 3    | keltner_channel_reversion      | +3.94%   | 2,177    | +0.18%  | Mean Reversion |
-| 4    | confidence_gating_consensus    | +3.12%   | 221      | +10.47% | Meta/Ensemble  |
-| 5    | mean_reversion_rsi             | +2.88%   | 1,385    | -1.12%  | Mean Reversion |
-| 6    | cci_reversion                  | +1.98%   | 2,364    | -0.05%  | Mean Reversion |
-| 7    | time_of_day_baseline           | +1.91%   | 4,729    | +13.76% | Calendar       |
-| 8    | logistic_regression_classifier | +1.66%   | 1,654    | +9.92%  | ML             |
+**Window strategies (ghost trader) — 10 total:**
 
-### Marginal (3 strategies with barely positive edge)
+| Strategy                    | OOS Edge | Category       | Notes                               |
+| --------------------------- | -------- | -------------- | ----------------------------------- |
+| zscore_reversion            | +5.79%   | Mean Reversion | Highest per-bet edge among classics |
+| bollinger_band_reversion    | +4.67%   | Mean Reversion | Solid edge, good sample             |
+| keltner_channel_reversion   | +3.94%   | Mean Reversion | Most reliable (largest sample)      |
+| stochastic_reversion        | +3.88%   | Mean Reversion | Added 2026-02-10, Tier 1 star       |
+| mean_reversion_rsi          | +2.88%   | Mean Reversion | Live: 42.5% hit — watch for removal |
+| cci_reversion               | +1.98%   | Mean Reversion | Thinnest MR edge                    |
+| entropy_filtered_zscore     | +7.29%   | Mean Reversion | Highest per-bet edge ever           |
+| narrow_range_breakout_mr    | +3.48%   | Mean Reversion | NR7 variant                         |
+| confidence_gating_consensus | +3.12%   | Meta/Ensemble  | Best live performer (60% hit)       |
+| xgboost_classifier          | +5.04%   | ML/Ensemble    | Best total PnL ever                 |
 
-| Strategy                 | OOS Edge | OOS Bets | Notes                                |
-| ------------------------ | -------- | -------- | ------------------------------------ |
-| efficiency_ratio         | +0.83%   | 3,566    | Large sample but thin edge           |
-| volatility_regime_filter | +0.55%   | 1,409    | Thin edge, unlikely to survive costs |
-| autocorrelation_regime   | +0.03%   | 3,386    | Essentially zero edge                |
+**Intra-window strategies (intra ghost trader) — 3 total:**
 
-### Failed (7 strategies with negative OOS edge)
+| Strategy          | Type                                       |
+| ----------------- | ------------------------------------------ |
+| IntraFairValueArb | Fair value arbitrage (price vs. orderbook) |
+| IntraLateMomentum | Momentum in final minutes of window        |
+| IntraEarlyFade    | Mean reversion fade of early moves         |
 
-| Strategy                     | OOS Edge     | Why It Failed                                  |
-| ---------------------------- | ------------ | ---------------------------------------------- |
-| atr_expansion_continuation   | N/A (0 bets) | Threshold too conservative, never triggered    |
-| calendar_seasonality_anomaly | N/A (0 OOS)  | Bonferroni correction too strict for data size |
-| hurst_exponent_momentum      | -2.82%       | Applied momentum when Hurst suggested MR       |
-| momentum_simple              | -3.32%       | BTC is not trending at 15-min                  |
-| roc_momentum                 | -4.28%       | Same momentum failure                          |
-| volume_spike_momentum        | -6.19%       | Volume spikes do not predict direction         |
-| runs_test                    | -9.78%       | Massive IS-to-OOS decay (overfit)              |
+### Retired
+
+| Strategy                       | Removed    | Reason                 |
+| ------------------------------ | ---------- | ---------------------- |
+| time_of_day_baseline           | 2026-02-10 | 31.6% live hit, -$3.66 |
+| logistic_regression_classifier | 2026-02-10 | Never fired in live    |
+
+### Backtest-Only (not promoted)
+
+These were tested but did not pass promotion gates. They remain in `backtester/strategies/` for future experimentation:
+
+| Strategy                     | OOS Edge | Why Not Promoted                     |
+| ---------------------------- | -------- | ------------------------------------ |
+| efficiency_ratio             | +0.83%   | Thin edge, unlikely to survive costs |
+| volatility_regime_filter     | +0.55%   | Too thin                             |
+| autocorrelation_regime       | +0.03%   | Essentially zero                     |
+| momentum_simple              | -3.32%   | BTC not trending at 15-min           |
+| roc_momentum                 | -4.28%   | Same momentum failure                |
+| volume_spike_momentum        | -6.19%   | Volume doesn't predict direction     |
+| runs_test                    | -9.78%   | Massive overfit                      |
+| hurst_exponent_momentum      | -2.82%   | Wrong regime assumption              |
+| atr_expansion_continuation   | N/A      | Never triggered                      |
+| calendar_seasonality_anomaly | N/A      | Bonferroni too strict                |
 
 ---
 
