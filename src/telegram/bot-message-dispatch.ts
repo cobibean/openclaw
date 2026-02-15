@@ -27,6 +27,38 @@ import { createTelegramDraftStream } from "./draft-stream.js";
 import { cacheSticker, describeStickerImage } from "./sticker-cache.js";
 
 const EMPTY_RESPONSE_FALLBACK = "No response generated. Please try again.";
+const DRAFT_STREAM_REASON_NOT_PRIVATE_CHAT = "not_private_chat";
+const DRAFT_STREAM_REASON_MISSING_THREAD_ID = "missing_thread_id";
+const DRAFT_STREAM_REASON_BOT_TOPICS_DISABLED = "bot_topics_disabled";
+type DraftStreamUnavailableReason =
+  | typeof DRAFT_STREAM_REASON_NOT_PRIVATE_CHAT
+  | typeof DRAFT_STREAM_REASON_MISSING_THREAD_ID
+  | typeof DRAFT_STREAM_REASON_BOT_TOPICS_DISABLED;
+
+const draftStreamWarningsByRuntime = new WeakMap<RuntimeEnv, Set<DraftStreamUnavailableReason>>();
+
+function warnDraftStreamingUnavailableOnce(params: {
+  runtime: RuntimeEnv;
+  streamMode: TelegramStreamMode;
+  reason: DraftStreamUnavailableReason;
+}) {
+  let warned = draftStreamWarningsByRuntime.get(params.runtime);
+  if (!warned) {
+    warned = new Set<DraftStreamUnavailableReason>();
+    draftStreamWarningsByRuntime.set(params.runtime, warned);
+  }
+  if (warned.has(params.reason)) {
+    return;
+  }
+  warned.add(params.reason);
+  params.runtime.error?.(
+    danger(
+      `telegram draft streaming unavailable (${params.reason}) with streamMode=${params.streamMode}. ` +
+        "Draft streaming requires private chats with topic thread IDs and bot topics enabled. " +
+        "Set channels.telegram.blockStreaming=true for step-level updates when draft streaming is unavailable.",
+    ),
+  );
+}
 
 async function resolveStickerVisionSupport(cfg: OpenClawConfig, agentId: string) {
   try {
@@ -91,11 +123,33 @@ export const dispatchTelegramMessage = async ({
   const isPrivateChat = msg.chat.type === "private";
   const draftThreadId = threadSpec.id;
   const draftMaxChars = Math.min(textLimit, 4096);
-  const canStreamDraft =
-    streamMode !== "off" &&
-    isPrivateChat &&
-    typeof draftThreadId === "number" &&
-    (await resolveBotTopicsEnabled(primaryCtx));
+  const blockStreamingConfigured = telegramCfg.blockStreaming === true;
+  const draftUnavailableReasons: DraftStreamUnavailableReason[] = [];
+  let topicsEnabled = false;
+  if (streamMode !== "off") {
+    if (!isPrivateChat) {
+      draftUnavailableReasons.push(DRAFT_STREAM_REASON_NOT_PRIVATE_CHAT);
+    }
+    if (typeof draftThreadId !== "number") {
+      draftUnavailableReasons.push(DRAFT_STREAM_REASON_MISSING_THREAD_ID);
+    }
+    if (isPrivateChat && typeof draftThreadId === "number") {
+      topicsEnabled = await resolveBotTopicsEnabled(primaryCtx);
+      if (!topicsEnabled) {
+        draftUnavailableReasons.push(DRAFT_STREAM_REASON_BOT_TOPICS_DISABLED);
+      }
+    }
+  }
+  const canStreamDraft = streamMode !== "off" && draftUnavailableReasons.length === 0;
+  if (streamMode !== "off" && !canStreamDraft && !blockStreamingConfigured) {
+    for (const reason of draftUnavailableReasons) {
+      warnDraftStreamingUnavailableOnce({
+        runtime,
+        streamMode,
+        reason,
+      });
+    }
+  }
   const draftStream = canStreamDraft
     ? createTelegramDraftStream({
         api: bot.api,

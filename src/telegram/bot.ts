@@ -260,6 +260,15 @@ export function createTelegramBot(opts: TelegramBotOptions) {
   const mediaMaxBytes = (opts.mediaMaxMb ?? telegramCfg.mediaMaxMb ?? 5) * 1024 * 1024;
   const logger = getChildLogger({ module: "telegram-auto-reply" });
   const streamMode = resolveTelegramStreamMode(telegramCfg);
+  if (streamMode !== "off" && telegramCfg.blockStreaming !== true) {
+    runtime.error?.(
+      danger(
+        "telegram: streamMode is enabled but channels.telegram.blockStreaming is not true. " +
+          "Draft streaming only works in private topic threads; non-draft chats will be final-only. " +
+          "Set channels.telegram.blockStreaming=true for step-level Telegram updates.",
+      ),
+    );
+  }
   let botHasTopicsEnabled: boolean | undefined;
   const resolveBotTopicsEnabled = async (ctx?: TelegramContext) => {
     if (typeof ctx?.me?.has_topics_enabled === "boolean") {
