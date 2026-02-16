@@ -76,3 +76,6 @@ memory/
 .agent/*.json
 !.agent/workflows/
 local/
+
+# Polly scratch workspace
+workspace/
