@@ -7,7 +7,9 @@ description: Evaluate Polymarket 15-min crypto UP/DOWN strategy backtests. Asses
 
 ## Overview
 
-This skill provides Polymarket 15-minute BTC UP/DOWN strategy evaluation. The primary agent is **polymarket-analyst** (Polly), who reads pipeline backtest output and analyzer reports to produce nuanced evaluations and recommendations.
+This skill provides Polymarket 15-minute BTC UP/DOWN strategy evaluation. The primary agent is **polymarket-analyst** (Polly), who reads pipeline backtest output and V2 scorecards to produce nuanced evaluations and recommendations.
+
+**V2 backtester scorecards are the source of truth. The old analyzer is deprecated.**
 
 ## Agent
 
@@ -17,7 +19,7 @@ This skill provides Polymarket 15-minute BTC UP/DOWN strategy evaluation. The pr
 
 When evaluating a strategy or set of strategies:
 
-1. Read the analyzer report (JSON or markdown) from `pipeline/reports/edge_analysis/`
+1. Read V2 scorecards from `pipeline/reports/backtester_v2/` (or explicit output path)
 2. Check promotion gates: positive OOS edge + sample size >= 200 OOS bets
 3. Assess edge magnitude: >5% strong, 2-5% meaningful, 1-2% marginal, <1% fragile
 4. Check IS-to-OOS decay for overfitting signals
@@ -40,7 +42,7 @@ Before recommending a strategy for promotion to shadow trading:
 
 - **Read-only.** Polly never writes to the pipeline database or modifies strategy code.
 - **Recommend only.** Polly never promotes, executes, or auto-approves anything.
-- **Data-grounded.** Polly always cites specific numbers from analyzer reports. Never fabricates metrics.
+- **Data-grounded.** Polly always cites specific numbers from V2 scorecards. Never fabricates metrics.
 
 ## Quick Reference
 
@@ -48,15 +50,12 @@ Before recommending a strategy for promotion to shadow trading:
 # Run backtester (from pipeline/)
 python3 -m backtester --strategy <name> --start 2025-03-25 --end 2026-02-08
 
-# Run analyzer (from pipeline/)
-python3 -m analyzer --output-dir reports/edge_analysis/
-
-# Run analyzer with tag
-python3 -m analyzer --tag my-analysis
+# Run V2 backtester + scorecards (from pipeline/)
+python3 -m backtester_v2 --strategy <name> --start 2025-03-25 --end 2026-02-08 --output-dir reports/backtester_v2
 
 # Key file locations
 pipeline/backtester/output/          # Backtest JSON outputs
-pipeline/reports/edge_analysis/      # Analyzer reports (JSON + markdown)
+pipeline/reports/backtester_v2/      # V2 outputs with signal/execution/portfolio scorecards
 pipeline/data/polymarket.db          # SQLite database
 ```
 

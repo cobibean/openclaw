@@ -29,7 +29,9 @@ Data flows one way: pipeline produces results, Polly reads and interprets them. 
 - **Key table:** `windows_15m` with columns: `window_epoch`, `window_start`, `open_price`, `close_price`, `high_price`, `low_price`, `volume_sum`, `label` (UP or DOWN)
 - **Data range:** 2025-03-25 to 2026-02-08 (30,721 fifteen-minute windows, ~10.5 months)
 - **Backtest outputs:** `pipeline/backtester/output/<strategy>_<timestamp>.json`
-- **Analyzer reports:** `pipeline/reports/edge_analysis/phase0c-analyzer-*.json` and `.md`
+- **V2 scorecards:** `pipeline/reports/backtester_v2/*.json` (signal, execution, portfolio scorecards)
+
+**V2 backtester scorecards are the source of truth. The old analyzer is deprecated.**
 
 ---
 
@@ -138,7 +140,7 @@ A strategy must pass ALL gates to be a promotion candidate:
 2. **Sample size >= 200** eligible OOS bets (sample_size_gate_pass)
 3. **[Future gate]** Consistency across 2+ distinct time periods
 
-The analyzer enforces gates 1-2 automatically. Gate 3 requires walk-forward validation (not yet implemented).
+V2 scorecards enforce gates 1-2 automatically. Gate 3 requires walk-forward validation (not yet implemented).
 
 ### Important Nuances
 
@@ -184,7 +186,7 @@ Backtest JSON files at `pipeline/backtester/output/<strategy>_<timestamp>.json` 
 }
 ```
 
-The analyzer reads these files and computes: hit rate, break-even, realized edge, PnL proxy, and promotion gates. Analyzer reports at `pipeline/reports/edge_analysis/` contain the full evaluation.
+Backtester V2 outputs include signal, execution, and portfolio scorecards with hit rate, break-even context, realized edge proxies, and promotion gate inputs. Scorecard artifacts in `pipeline/reports/backtester_v2/` contain the full evaluation.
 
 ---
 
@@ -197,7 +199,7 @@ The analyzer reads these files and computes: hit rate, break-even, realized edge
 - Assess regime shift risk and what would invalidate the mean-reversion thesis
 - Reason about sample size significance for binary outcomes
 - Explain the math behind any strategy or metric
-- Read analyzer reports and backtest JSON to ground your analysis in data
+- Read V2 scorecards and backtest JSON to ground your analysis in data
 - Suggest improvements to the backtesting and analysis pipeline
 
 ## Current Restrictions (Phase 0)
@@ -229,17 +231,11 @@ All commands run from `pipeline/` working directory:
 # Run a backtest
 python3 -m backtester --strategy zscore_reversion --start 2025-03-25 --end 2026-02-08
 
-# Run the analyzer on all latest backtest outputs
-python3 -m analyzer --output-dir reports/edge_analysis/
+# Run V2 backtester + scorecards
+python3 -m backtester_v2 --strategy zscore_reversion --start 2025-03-25 --end 2026-02-08 --output-dir reports/backtester_v2
 
-# Run analyzer with a custom tag
-python3 -m analyzer --tag tier3-final-results
-
-# Run analyzer on specific files
-python3 -m analyzer --input backtester/output/zscore_reversion_20260209T012513Z.json
-
-# Override cost assumptions
-python3 -m analyzer --fee-per-contract 0.01 --slippage-per-contract 0.005
+# Override strategy params (JSON)
+python3 -m backtester_v2 --strategy zscore_reversion --start 2025-03-25 --end 2026-02-08 --param-overrides-json '{"lookback_windows": 30}'
 
 # Run tests
 python3 test_backtester.py

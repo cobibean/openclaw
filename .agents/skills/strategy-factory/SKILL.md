@@ -4,9 +4,17 @@
 
 ## Overview
 
-The Strategy Factory creates novel trading strategies that predict BTC 15-minute price direction (UP/DOWN) on Polymarket binary outcome markets. Each strategy implements the `Strategy` ABC from `strategies/base.py`, lives in an auto-discovered directory under `pipeline/strategies/`, and gets backtested + analyzed through the standard pipeline.
+The Strategy Factory creates novel trading strategies that predict BTC 15-minute price direction (UP/DOWN) on Polymarket binary outcome markets. Each strategy implements the `Strategy` ABC from `strategies/base.py`, lives in an auto-discovered directory under `pipeline/strategies/`, and gets backtested + scored through the standard pipeline.
+
+**V2 backtester scorecards are the source of truth. The old analyzer is deprecated.**
 
 **You are an autonomous agent.** Generate hypotheses, write strategies, backtest them, evaluate results, and recommend promising candidates. You CANNOT promote strategies to live — only Polly (CEO) can do that.
+
+**runtime assumptions (current):**
+- workspace root: `/home/cobi/bot`
+- pipeline cwd: `/home/cobi/bot/pipeline`
+- python: `/home/cobi/bot/.venv/bin/python`
+- database: PostgreSQL (`postgresql://polly:polly@localhost:5432/polymarket`)
 
 ## Architecture
 
@@ -59,10 +67,9 @@ pipeline/
 │   ├── features.py      ← Feature builder (what data your strategy receives)
 │   ├── runner.py         ← Executes backtest loop
 │   └── __main__.py       ← Backtest CLI
-├── analyzer/
-│   ├── core.py           ← Computes edge metrics, OOS splits
-│   ├── __main__.py       ← Analysis CLI
-│   └── report.py         ← Markdown report generation
+├── backtester_v2/
+│   ├── cli.py            ← V2 CLI (`python -m backtester_v2`)
+│   └── scorecards/       ← Signal, execution, portfolio scorecards
 └── ghost_trader/         ← Live shadow trading (reads from registry)
 ```
 
@@ -225,8 +232,8 @@ Document:
 ### 6. Backtest
 
 ```bash
-cd /mnt/c/Users/jacob/DEV/bot/pipeline
-/home/cobi/pipeline-venv/bin/python -m backtester \
+cd /home/cobi/bot/pipeline
+/home/cobi/bot/.venv/bin/python -m backtester \
   --strategy my_new_strategy \
   --start 2024-01-01 \
   --end 2026-02-01
@@ -237,19 +244,19 @@ Writes output JSON to `backtester/output/`.
 **Date range guidance:**
 - Full backtest: `--start 2024-01-01 --end 2026-02-01` (~2 years)
 - Quick validation: `--start 2025-06-01 --end 2026-02-01` (~8 months)
-- Analyzer uses last 20% as OOS by default
+- V2 scorecards are the authoritative evaluation output
 
 ### 7. Analyze
 
 ```bash
-/home/cobi/pipeline-venv/bin/python -m analyzer \
-  --input backtester/output/my_new_strategy_*.json
+/home/cobi/bot/.venv/bin/python -m backtester_v2 \
+  --strategy my_new_strategy \
+  --start 2024-01-01 \
+  --end 2026-02-01 \
+  --output-dir reports/backtester_v2
 ```
 
-Or analyze all latest outputs:
-```bash
-/home/cobi/pipeline-venv/bin/python -m analyzer
-```
+Backtester V2 emits `signal_scorecard`, `execution_scorecard`, and `portfolio_scorecard` in each output artifact. Use those scorecards for go/no-go decisions.
 
 ### 8. Evaluate Against Quality Gates
 
