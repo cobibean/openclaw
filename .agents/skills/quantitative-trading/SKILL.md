@@ -27,16 +27,12 @@ When evaluating a strategy or set of strategies:
 6. Assess real-world viability (would edge survive fees/slippage?)
 7. Recommend next steps: promote, tune, combine, or abandon
 
-## Promotion Checklist
+## Promotion Pipeline
 
-Before recommending a strategy for promotion to shadow trading:
+→ **Full 4-stage promotion pipeline:** `pipeline/docs/playbook/promotion-pipeline.md`
 
-- [ ] Positive OOS realized edge after modeled costs
-- [ ] At least 200 eligible OOS bets
-- [ ] IS-to-OOS decay is reasonable (not massive overfitting)
-- [ ] Edge magnitude likely survives real fees (~1% minimum)
-- [ ] Strategy is not redundant with a better-performing existing candidate
-- [ ] [Future] Consistent across 2+ distinct time periods
+Quick version: Ghost screening → Fill price profiling → $1 real trial → Scale up.
+Ghost PnL alone is NOT sufficient — fill price bucket analysis required before promotion.
 
 ## Safety
 
@@ -46,23 +42,19 @@ Before recommending a strategy for promotion to shadow trading:
 
 ## Quick Reference
 
+→ **Full CLI + operations reference:** `pipeline/docs/playbook/operations.md`
+
 ```bash
-# Run backtester (from pipeline/)
-python3 -m backtester --strategy <name> --start 2025-03-25 --end 2026-02-08
+cd /home/cobi/bot/pipeline
 
-# Run V2 backtester + scorecards (from pipeline/)
-python3 -m backtester_v2 --strategy <name> --start 2025-03-25 --end 2026-02-08 --output-dir reports/backtester_v2
+# V2 backtester (source of truth)
+/home/cobi/bot/.venv/bin/python -m backtester_v2 --strategy <name> --start 2024-01-01 --end 2026-02-01
 
-# Key file locations
-pipeline/backtester/output/          # Backtest JSON outputs
-pipeline/reports/backtester_v2/      # V2 outputs with signal/execution/portfolio scorecards
-pipeline/data/polymarket.db          # SQLite database
+# Fill gap analysis (ghost vs real fills)
+/home/cobi/bot/.venv/bin/python scripts/analysis/fill_gap_analysis.py
+
+# Strategy health scores
+/home/cobi/bot/.venv/bin/python scripts/analysis/strategy_health_score.py
 ```
 
-## Current State (as of 2026-02-09)
-
-- 18 strategies tested, 11 promotion candidates, 8 in war chest
-- Mean reversion thesis confirmed by 5 independent formulations
-- Top 3: zscore_reversion (+5.79%), bollinger_band_reversion (+4.67%), keltner_channel_reversion (+3.94%)
-- All momentum strategies failed with negative OOS edge
-- Data: 30,721 fifteen-minute windows (2025-03-25 to 2026-02-08)
+→ **Full playbook index:** `pipeline/docs/playbook/README.md`

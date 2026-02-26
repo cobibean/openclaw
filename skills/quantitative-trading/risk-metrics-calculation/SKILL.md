@@ -14,6 +14,16 @@ Our evaluation framework for Polymarket 15-minute BTC UP/DOWN binary prediction 
 
 The deterministic analyzer lives at `pipeline/analyzer/core.py`. It reads backtest JSON output and computes cost-aware metrics with an 80/20 in-sample/out-of-sample split.
 
+### ⚠️ Cost Model Update (Feb 26, 2026)
+
+**The old analyzer's static cost model is outdated.** Key corrections:
+- Taker fee is charged to MAKER, not taker. Break-even = fill_price per trade.
+- There is no single break-even % — it varies per trade based on fill price.
+- See `pipeline/docs/playbook/cost-structure.md` for the corrected model.
+- See `pipeline/docs/playbook/metrics-guide.md` for metric interpretation.
+
+The analyzer concepts below are still valid for understanding the framework, but the specific numbers are superseded by the playbook.
+
 ### AnalysisConfig
 
 ```python
@@ -119,7 +129,12 @@ This prevents look-ahead bias. The IS period is where the strategy "would have b
 
 ## Promotion Gates
 
-A strategy must pass ALL gates:
+→ **Full 4-stage promotion pipeline:** `pipeline/docs/playbook/promotion-pipeline.md`
+
+The old 2-gate system (positive OOS edge + 200 bets) is necessary but NOT sufficient.
+Feb 26 analysis showed ghost PnL can be wildly misleading without fill price profiling.
+
+Legacy gates (still used as Stage 1 screening):
 
 1. **positive_oos_edge_pass:** `oos.realized_edge > 0.0`
 2. **sample_size_gate_pass:** `overall.eligible_bets >= 200`
