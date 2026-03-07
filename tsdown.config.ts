@@ -30,4 +30,11 @@ export default defineConfig([
     fixedExtension: false,
     platform: "node",
   },
+  {
+    entry: "brain/index.ts",
+    outDir: "dist/brain",
+    env,
+    fixedExtension: false,
+    platform: "node",
+  },
 ]);

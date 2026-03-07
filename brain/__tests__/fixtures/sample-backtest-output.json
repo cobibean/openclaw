@@ -1,0 +1,80 @@
+{
+  "strategy": "zscore_reversion",
+  "version": "0.1.0",
+  "data_range": ["2025-03-25", "2026-02-08"],
+  "timestamp": "2026-02-09T01:25:13Z",
+  "total_predictions": 30701,
+  "config": {
+    "lookback_windows": 20,
+    "z_threshold": 2.0,
+    "zscore_period": 20
+  },
+  "predictions": [
+    {
+      "action": "DOWN",
+      "metadata": {
+        "reason": "overbought",
+        "sma": 86657.59,
+        "stddev": 179.555252,
+        "z_threshold": 2.0,
+        "zscore": 2.047094
+      },
+      "p_up": 0.492936,
+      "signal_strength": 0.023547,
+      "window_epoch": 1742895900
+    },
+    {
+      "action": "DOWN",
+      "metadata": {
+        "reason": "overbought",
+        "sma": 86701.12,
+        "stddev": 213.536255,
+        "z_threshold": 2.0,
+        "zscore": 2.654929
+      },
+      "p_up": 0.401761,
+      "signal_strength": 0.327464,
+      "window_epoch": 1742896800
+    },
+    {
+      "action": "DOWN",
+      "metadata": {
+        "reason": "overbought",
+        "sma": 86744.64,
+        "stddev": 234.876293,
+        "z_threshold": 2.0,
+        "zscore": 2.228409
+      },
+      "p_up": 0.465739,
+      "signal_strength": 0.114205,
+      "window_epoch": 1742897700
+    },
+    {
+      "action": "NO_BET",
+      "metadata": {
+        "reason": "within_threshold",
+        "sma": 86788.16,
+        "stddev": 246.875497,
+        "z_threshold": 2.0,
+        "zscore": 1.943804
+      },
+      "p_up": 0.5,
+      "signal_strength": 0.0,
+      "window_epoch": 1742898600
+    },
+    {
+      "action": "NO_BET",
+      "metadata": {
+        "reason": "within_threshold",
+        "sma": 86831.69,
+        "stddev": 250.877751,
+        "z_threshold": 2.0,
+        "zscore": 1.739311
+      },
+      "p_up": 0.5,
+      "signal_strength": 0.0,
+      "window_epoch": 1742899500
+    }
+  ],
+  "actuals": ["UP", "UP", "UP", "UP", "UP"]
+}

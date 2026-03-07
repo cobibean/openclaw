@@ -1,0 +1,128 @@
+{
+  "config": {
+    "ask_down": 0.5083947836725614,
+    "ask_up": 0.5069725280836392,
+    "fee_per_contract": 0.0,
+    "oos_fraction": 0.2,
+    "slippage_per_contract": 0.0
+  },
+  "strategies": [
+    {
+      "data_range": ["2025-03-25", "2026-02-08"],
+      "no_bet_count": 27153,
+      "out_of_sample": {
+        "avg_effective_edge": 0.0669387913756197,
+        "avg_entry_cost": 0.5076350815752,
+        "avg_pnl_proxy_per_bet": 0.0579386889166033,
+        "avg_raw_edge": 0.0669387913756197,
+        "break_even_hit_rate": 0.5076350815752,
+        "directional_hit_rate": 0.5655737704918032,
+        "directional_hits": 414,
+        "eligible_bets": 732,
+        "positive_effective_edge_rate": 0.9112021857923497,
+        "realized_edge": 0.057938688916603254,
+        "total_pnl_proxy": 42.411120286953725
+      },
+      "overall": {
+        "avg_effective_edge": 0.06636995832469698,
+        "avg_entry_cost": 0.5076519878421576,
+        "avg_pnl_proxy_per_bet": 0.017150717907560568,
+        "avg_raw_edge": 0.06636995832469698,
+        "break_even_hit_rate": 0.5076519878421576,
+        "directional_hit_rate": 0.5248027057497181,
+        "directional_hits": 1862,
+        "eligible_bets": 3548,
+        "positive_effective_edge_rate": 0.9044532130777903,
+        "realized_edge": 0.01715071790756051,
+        "total_pnl_proxy": 60.85074713602481
+      },
+      "positive_oos_edge_pass": true,
+      "promotion_candidate": true,
+      "run_timestamp": "2026-02-09T01:25:13Z",
+      "sample_size_gate_pass": true,
+      "source_file": "backtester/output/zscore_reversion_20260209T012513Z.json",
+      "source_sha256": "26884f4f5d0bfd2a22ea17dae21e3f6aa25f1b57810a708b143e58181b40a395",
+      "strategy": "zscore_reversion",
+      "total_predictions": 30701,
+      "version": "0.1.0"
+    },
+    {
+      "data_range": ["2025-03-25", "2026-02-08"],
+      "no_bet_count": 13550,
+      "out_of_sample": {
+        "avg_effective_edge": 0.24749694272891948,
+        "avg_entry_cost": 0.5076920314718657,
+        "avg_pnl_proxy_per_bet": 0.008292264658252066,
+        "avg_raw_edge": 0.24749694272891948,
+        "break_even_hit_rate": 0.5076920314718657,
+        "directional_hit_rate": 0.5159842961301178,
+        "directional_hits": 1840,
+        "eligible_bets": 3566,
+        "positive_effective_edge_rate": 1.0,
+        "realized_edge": 0.008292264658252058,
+        "total_pnl_proxy": 29.570215771326563
+      },
+      "overall": {
+        "avg_effective_edge": 0.2516901523925171,
+        "avg_entry_cost": 0.5077006042650204,
+        "avg_pnl_proxy_per_bet": 0.002467800839577281,
+        "avg_raw_edge": 0.2516901523925171,
+        "break_even_hit_rate": 0.5077006042650204,
+        "directional_hit_rate": 0.5101684051045976,
+        "directional_hits": 8755,
+        "eligible_bets": 17161,
+        "positive_effective_edge_rate": 1.0,
+        "realized_edge": 0.0024678008395772055,
+        "total_pnl_proxy": 42.34993020798578
+      },
+      "positive_oos_edge_pass": true,
+      "promotion_candidate": true,
+      "run_timestamp": "2026-02-09T01:25:10Z",
+      "sample_size_gate_pass": true,
+      "source_file": "backtester/output/efficiency_ratio_20260209T012510Z.json",
+      "source_sha256": "279148789e0724d7b05f06b7ca8536197f39704b18fa8ca41d421b18f5ab4f96",
+      "strategy": "efficiency_ratio",
+      "total_predictions": 30711,
+      "version": "0.1.0"
+    },
+    {
+      "data_range": ["2025-03-25", "2026-02-08"],
+      "no_bet_count": 7139,
+      "out_of_sample": {
+        "avg_effective_edge": 0.2341576625130192,
+        "avg_entry_cost": 0.5077274619797879,
+        "avg_pnl_proxy_per_bet": -0.03317932476104942,
+        "avg_raw_edge": 0.2341576625130192,
+        "break_even_hit_rate": 0.5077274619797879,
+        "directional_hit_rate": 0.47454813721873845,
+        "directional_hits": 2573,
+        "eligible_bets": 5422,
+        "positive_effective_edge_rate": 1.0,
+        "realized_edge": -0.033179324761049456,
+        "total_pnl_proxy": -179.89829885441898
+      },
+      "overall": {
+        "avg_effective_edge": 0.23065375379386718,
+        "avg_entry_cost": 0.5076941211796262,
+        "avg_pnl_proxy_per_bet": -0.018402802633462216,
+        "avg_raw_edge": 0.23065375379386718,
+        "break_even_hit_rate": 0.5076941211796262,
+        "directional_hit_rate": 0.489291318546164,
+        "directional_hits": 11537,
+        "eligible_bets": 23579,
+        "positive_effective_edge_rate": 1.0,
+        "realized_edge": -0.018402802633462223,
+        "total_pnl_proxy": -433.9196832943398
+      },
+      "positive_oos_edge_pass": false,
+      "promotion_candidate": false,
+      "run_timestamp": "2026-02-08T23:30:00Z",
+      "sample_size_gate_pass": true,
+      "source_file": "backtester/output/momentum_simple_20260208T233000Z.json",
+      "source_sha256": "54cd9300f24490c13370a5bd866c3c442e40d220ef18389654907782f134d35a",
+      "strategy": "momentum_simple",
+      "total_predictions": 30718,
+      "version": "0.1.0"
+    }
+  ]
+}

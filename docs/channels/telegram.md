@@ -610,6 +610,36 @@ Note: draft streaming is separate from **block streaming** (channel messages).
 Block streaming is off by default and requires `channels.telegram.blockStreaming: true`
 if you want early Telegram messages instead of draft updates.
 
+### Batched Delivery Troubleshooting
+
+If Telegram messages arrive only at turn end (instead of step-by-step), your chat likely
+is not draft-eligible (for example: group chat, missing topic thread id, or bot topics disabled)
+and block streaming is not enabled.
+
+Use this config for step-level Telegram updates:
+
+```json
+{
+  "channels": {
+    "telegram": {
+      "streamMode": "partial",
+      "blockStreaming": true,
+      "chunkMode": "newline",
+      "blockStreamingCoalesce": {
+        "minChars": 120,
+        "idleMs": 350
+      }
+    }
+  }
+}
+```
+
+How this works:
+
+- `streamMode`: draft bubble updates when draft prerequisites are met.
+- `blockStreaming`: real Telegram message updates during long runs when draft streaming is unavailable.
+- `chunkMode` + `blockStreamingCoalesce`: control step-level grouping and pacing.
+
 Reasoning stream (Telegram only):
 
 - `/reasoning stream` streams reasoning into the draft bubble while the reply is
