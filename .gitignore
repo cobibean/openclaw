@@ -79,3 +79,7 @@ local/
 
 # Polly scratch workspace
 workspace/
+
+# Cleanup baseline artifacts (2026-02-25)
+*.pkl
+*.cobi
