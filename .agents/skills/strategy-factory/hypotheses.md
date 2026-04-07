@@ -33,11 +33,12 @@
 
 ---
 
-### H-004: Opening Range Breakout (Hourly Anchor)
+### H-004: Opening Range Breakout (Hourly Anchor) — [TESTED — FAILED]
 **Category:** microstructure  
 **Hypothesis:** The first 15-min candle of each hour sets a range; breakouts above/below this range in the 2nd or 3rd 15-min window have follow-through momentum.  
 **Features to use:** `window_start` epoch, OHLCV  
 **Implementation idea:** Track hourly open/high/low; trigger on breakout from first sub-window's range.
+**Result (2026-03-26):** OOS hit rate 46.75%, gross edge -3.25%, 2,943 bets. Strategy: `hourly_orb_momentum`. Momentum continuation after hourly ORB is anti-signal at 15-min BTC — breakouts get faded, confirming dominant mean-reversion dynamic. Even intra-hour breakout structure doesn't override MR.
 
 ---
 
@@ -65,11 +66,12 @@
 
 ---
 
-### H-008: High-Low Range Z-Score with Volume Confirmation
+### H-008: High-Low Range Z-Score with Volume Confirmation — [TESTED — INCONCLUSIVE]
 **Category:** statistical  
 **Hypothesis:** Candles with range Z-score > 2.0 AND volume Z-score > 1.5 are likely continuation candles; candles with high range but low volume are likely reversals.  
 **Features to use:** range = high - low, volume  
 **Implementation idea:** 2-factor classification: continuation if both Z-scores elevated; reversion if range high but volume low.
+**Result (2026-03-26):** V2 backtest (2024-01-01→2026-02-01) with params (min_range_zscore=1.5, max_volume_zscore=0.0, min_body_ratio=0.30): 75 bets, hit_rate=61.33%, no_bet_ratio=99.3%. FAILS 200-bet sample gate — too selective. Signal direction is promising but statistically inconclusive. Strategy: `range_volume_divergence`. Ghost NOT activated. Relaxing thresholds risks diluting the divergence signal. Revisit when live ghost data accumulates or explore alternative param sets.
 
 ---
 
@@ -79,6 +81,15 @@
 **Status:** [TESTED — PASSED]  
 **Result:** OOS net edge +5.47%, 591 bets, hit rate 56.0%. Ghost activated.  
 **Date:** ~2026-02-19
+
+---
+
+### H-009: Half-Window Exhaustion Reversion — [TESTED — FAILED]
+**Category:** microstructure / mean_reversion  
+**Hypothesis:** When the first half of a 15-min window drives price strongly in one direction but the second half fails to follow through (or reverses), the initial move was unsustainable — the next window should revert. Uses `first_half_return / second_half_return` persistence ratio from micro features.  
+**Features to use:** `first_half_return`, `second_half_return` from `history_micro`  
+**Implementation idea:** Compute persistence = second_half/first_half; when persistence < 0.3, fade the first-half direction. Gate by minimum first-half magnitude (0.1%).  
+**Result (2026-03-26):** OOS hit rate 50.52%, gross edge +0.52% (vs ~60.7% break-even), 2,991 bets. Strategy: `halfwindow_exhaustion`. Intra-window momentum structure (how the move happened) has NO directional predictive power for the next window at 15-min BTC resolution. The way price moves within a window is noise — only the magnitude/direction matters, not the first-half vs second-half split.
 
 ---
 

@@ -136,7 +136,8 @@ export const handleTtsCommands: CommandHandler = async (params, allowTextCommand
       });
       const payload: ReplyPayload = {
         mediaUrl: result.audioPath,
-        audioAsVoice: result.voiceCompatible === true,
+        audioAsVoice:
+          params.command.channel === "telegram" ? false : result.voiceCompatible === true,
       };
       return { shouldContinue: false, reply: payload };
     }
